@@ -6,21 +6,25 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class DrawCircleView extends View {
-    Paint paint1;
-    Paint paint2;
-    Paint paint3;
-    Paint paint4;
     float StrokeWidth = 300.0f;
     int centerX;
     int centerY;
     int rangeX = 300;
     int rangeY = 300;
-    float sweepAngle = 90;
-    float startAngle = 0;
     RectF rect;
+
+    ArrayList<int[]> colorList = new ArrayList<>();
+    ArrayList<Integer> values = new ArrayList<>();
+    ArrayList<Float> sweepAngles = new ArrayList<>();
+    ArrayList<Float> startAngles = new ArrayList<>();
+    float sumValue;
+    float sweepAngle = -90;
 
     public DrawCircleView(Context context) {
         super(context);
@@ -28,28 +32,32 @@ public class DrawCircleView extends View {
 
     public DrawCircleView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        startAngle = startAngle - 90;
         rect = new RectF();
 
-        paint1 = new Paint();
-        paint1.setColor(Color.argb(128, 0, 0, 255));
-        paint1.setStrokeWidth(StrokeWidth);
-        paint1.setStyle(Paint.Style.STROKE);
+        colorList.add(new int[]{128, 255, 0, 0});
+        colorList.add(new int[]{128, 0, 255, 0});
+        colorList.add(new int[]{128, 0, 0, 255});
+        colorList.add(new int[]{128, 255, 255, 0});
 
-        paint2 = new Paint();
-        paint2.setColor(Color.argb(128, 0, 255, 0));
-        paint2.setStrokeWidth(StrokeWidth);
-        paint2.setStyle(Paint.Style.STROKE);
+        values.add(500);
+        values.add(250);
+        values.add(125);
+        values.add(125);
 
-        paint3 = new Paint();
-        paint3.setColor(Color.argb(128, 255, 0, 0));
-        paint3.setStrokeWidth(StrokeWidth);
-        paint3.setStyle(Paint.Style.STROKE);
+        for (int i = 0; i < values.size(); i++) {
+            sumValue += values.get(i);
+        }
 
-        paint4 = new Paint();
-        paint4.setColor(Color.argb(128, 255, 0, 255));
-        paint4.setStrokeWidth(StrokeWidth);
-        paint4.setStyle(Paint.Style.STROKE);
+        for (int i = 0; i < values.size(); i++) {
+            sweepAngles.add((values.get(i) / sumValue) * 360);
+        }
+
+        for (int i = -1; i < values.size() - 1; i++) {
+            if (i != -1) {
+                sweepAngle += (double) sweepAngles.get(i);
+            }
+            startAngles.add(sweepAngle);
+        }
     }
 
     @Override
@@ -59,16 +67,24 @@ public class DrawCircleView extends View {
         rect.set(centerX - rangeX, centerY - rangeY,
                 centerX + rangeX, centerY + rangeY);
 
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint1);
-        startAngle = 90 - 90;
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint2);
-        startAngle = 180 - 90;
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint3);
-        startAngle = 270 - 90;
-        canvas.drawArc(rect, startAngle, sweepAngle, false, paint4);
+        for (int i = 0; i < values.size(); i++) {
+            canvas.drawArc(rect, startAngles.get(i), sweepAngles.get(i), false,
+                    setPaint(colorList.get(i)[0],
+                            colorList.get(i)[1],
+                            colorList.get(i)[2],
+                            colorList.get(i)[3]));
+        }
     }
 
-    public void showCanvas(){
+    public void showCanvas() {
         invalidate();
+    }
+
+    private Paint setPaint(int alpha, int r, int g, int b) {
+        Paint paint = new Paint();
+        paint.setColor(Color.argb(alpha, r, g, b));
+        paint.setStrokeWidth(StrokeWidth);
+        paint.setStyle(Paint.Style.STROKE);
+        return paint;
     }
 }
