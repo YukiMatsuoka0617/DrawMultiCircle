@@ -5,19 +5,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
     DrawCircleView drawCircleView;
     Button button;
     LayoutInflater inflater;
     View layout;
     NumberPicker numPicker0, numPicker1, numPicker2, numPicker3,numPicker4,numPicker5;
-    int[] num = new int[6];
+    EditText editText;
+    String name;
+    ListView listView;
+    ArrayList data;
+    ArrayAdapter adapter;
+    private InputMethodManager inputMethodManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
 
         drawCircleView = findViewById(R.id.drawCircleView);
+        listView = findViewById(R.id.listView);
+        data = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+
+        inputMethodManager =  (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+
     }
 
     @Override
@@ -38,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     void NumPickerDialog(){
         inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
         layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.layout));
+
+        editText = layout.findViewById(R.id.editText);
+        editText.setHint("会社名");
+        editText.setOnKeyListener(this);
 
         numPicker0 = layout.findViewById(R.id.numPicker0);
         numPicker1 = layout.findViewById(R.id.numPicker1);
@@ -65,24 +88,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         numPicker5.setMinValue(0);
 
         new AlertDialog.Builder(this)
-                .setTitle("title")
+                .setTitle("会社名と株価の追加")
                 .setView(layout)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // OK button pressed
-                        num[0] = numPicker0.getValue();
-                        num[1] = numPicker1.getValue();
-                        num[2] = numPicker2.getValue();
-                        num[3] = numPicker3.getValue();
-                        num[4] = numPicker4.getValue();
-                        num[5] = numPicker5.getValue();
 
-                        int result = num[0]*10000 + num[1]*1000 + num[2]*100 + num[3]*10 + num[4];
-                        drawCircleView.addValue(result);
+                        int stockPrice = numPicker0.getValue()*10000 +
+                                numPicker1.getValue()*1000 +
+                                numPicker2.getValue()*100 +
+                                numPicker3.getValue()*10 +
+                                numPicker5.getValue();
+                        name = editText.getText().toString();
+
+                        if(name.length() != 0) {
+                            drawCircleView.addValue(stockPrice);
+                            data.add(name);
+                            listView.setAdapter(adapter);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        if((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)){
+            inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            return true;
+        }
+        return false;
     }
 }

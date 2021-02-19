@@ -20,6 +20,8 @@ public class DrawCircleView extends View {
     int rangeX = 300;
     int rangeY = 300;
     RectF rect;
+    RectF baseRect;
+    Paint paint;
 
     private ArrayList<int[]> colorList;
     private ArrayList<Integer> values = new ArrayList<>();
@@ -38,16 +40,25 @@ public class DrawCircleView extends View {
     public DrawCircleView(Context context, AttributeSet attrs) {
         super(context, attrs);
         rect = new RectF();
+        baseRect = new RectF();
 
         colorList = ColorList.getColorList();
+
+        paint = new Paint();
+        paint.setColor(Color.argb(255, 0, 0, 0));
+        paint.setStrokeWidth(10);
+        paint.setStyle(Paint.Style.STROKE);
     }
 
     @Override
     protected void onDraw(final Canvas canvas) {
         centerX = getWidth() / 2;
-        centerY = getHeight() / 2 - 400;
+        centerY = getHeight() / 2 - 100;
         rect.set(centerX - rangeX, centerY - rangeY,
                 centerX + rangeX, centerY + rangeY);
+
+        baseRect.set(centerX - 450, centerY - 450,
+                centerX + 450, centerY + 450);
 
         for (int i = 0; i < values.size(); i++) {
             sumValue += values.get(i);
@@ -66,6 +77,8 @@ public class DrawCircleView extends View {
             startAngles.add(sweepAngle);
         }
         Log.d("test", "startAngles:"+startAngles);
+
+        canvas.drawArc(baseRect, -90, 360, false, paint);
 
         for (int i = 0; i < values.size(); i++) {
             canvas.drawArc(rect, startAngles.get(i), sweepAngles.get(i), false,
