@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button button;
     LayoutInflater inflater;
     View layout;
-    NumberPicker numPicker0, numPicker1, numPicker2, numPicker3,numPicker4,numPicker5;
+    NumberPicker numPicker0, numPicker1, numPicker2, numPicker3,numPicker4,numPicker5,
+            numPicker6, numPicker7, numPicker8, numPicker9;
     EditText editText;
     String name;
     ListView listView;
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         numPicker3 = layout.findViewById(R.id.numPicker3);
         numPicker4 = layout.findViewById(R.id.numPicker4);
         numPicker5 = layout.findViewById(R.id.numPicker5);
+        numPicker6 = layout.findViewById(R.id.numPicker6);
+        numPicker7 = layout.findViewById(R.id.numPicker7);
+        numPicker8 = layout.findViewById(R.id.numPicker8);
+        numPicker9 = layout.findViewById(R.id.numPicker9);
 
         numPicker0.setMaxValue(9);
         numPicker0.setMinValue(0);
@@ -87,6 +92,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         numPicker5.setMaxValue(9);
         numPicker5.setMinValue(0);
 
+        numPicker6.setMaxValue(9);
+        numPicker6.setMinValue(0);
+
+        numPicker7.setMaxValue(9);
+        numPicker7.setMinValue(0);
+
+        numPicker8.setMaxValue(9);
+        numPicker8.setMinValue(0);
+
+        numPicker9.setMaxValue(9);
+        numPicker0.setMinValue(0);
+
         new AlertDialog.Builder(this)
                 .setTitle("会社名と株価の追加")
                 .setView(layout)
@@ -98,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 numPicker1.getValue()*1000 +
                                 numPicker2.getValue()*100 +
                                 numPicker3.getValue()*10 +
-                                numPicker5.getValue();
+                                numPicker4.getValue();
                         name = editText.getText().toString();
 
                         if(name.length() != 0) {
