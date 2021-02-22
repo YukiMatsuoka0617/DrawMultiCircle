@@ -16,22 +16,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
     DrawCircleView drawCircleView;
     Button button;
     LayoutInflater inflater;
     View layout;
-    NumberPicker numPicker0, numPicker1, numPicker2, numPicker3,numPicker4,numPicker5,
-            numPicker6, numPicker7, numPicker8, numPicker9;
+    NumberPicker numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
+            numPicker5, numPicker6, numPicker7, numPicker8, numPicker9;
     EditText editText;
-    String name;
     ListView listView;
-    ArrayList data;
-    ArrayAdapter adapter;
     private InputMethodManager inputMethodManager;
+    SimpleAdapter adapter;
+    ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +45,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         drawCircleView = findViewById(R.id.drawCircleView);
         listView = findViewById(R.id.listView);
-        data = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
-
+        adapter = new SimpleAdapter(this,
+                list,
+                R.layout.listview_item,
+                new String[]{"name","value","num","sum"},
+                new int[]{R.id.name, R.id.value,R.id.num, R.id.sum});
         inputMethodManager =  (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+        Map data = new HashMap();
+        data.put("name", "Corporation");
+        data.put("value", "Price");
+        data.put("num", "Num");
+        data.put("sum", "Sum");
+        list.add(data);
+        listView.setAdapter(adapter);
+
+        //debug
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
 
     }
 
@@ -102,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         numPicker8.setMinValue(0);
 
         numPicker9.setMaxValue(9);
-        numPicker0.setMinValue(0);
+        numPicker9.setMinValue(0);
 
         new AlertDialog.Builder(this)
                 .setTitle("会社名と株価の追加")
@@ -116,12 +132,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 numPicker2.getValue()*100 +
                                 numPicker3.getValue()*10 +
                                 numPicker4.getValue();
-                        name = editText.getText().toString();
+                        String name = editText.getText().toString();
 
-                        if(name.length() != 0) {
-                            drawCircleView.addValue(stockPrice);
-                            data.add(name);
+                        int stockNum = numPicker6.getValue()*1000 +
+                                numPicker7.getValue()*100 +
+                                numPicker8.getValue()*10 +
+                                numPicker9.getValue();
+
+                        if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
+                            Map data = new HashMap();
+                            data.put("name", name);
+                            data.put("value", stockPrice);
+                            data.put("num", stockNum);
+                            data.put("sum", stockPrice * stockNum);
+                            list.add(data);
                             listView.setAdapter(adapter);
+                            drawCircleView.addValue(stockPrice * stockNum);
                         }
                     }
                 })

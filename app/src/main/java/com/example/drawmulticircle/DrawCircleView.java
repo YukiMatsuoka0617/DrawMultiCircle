@@ -14,18 +14,18 @@ import android.view.View;
 import java.util.ArrayList;
 
 public class DrawCircleView extends View {
-    float StrokeWidth = 300.0f;
+    float StrokeWidth = 100.0f;
     int centerX;
     int centerY;
-    int rangeX = 300;
-    int rangeY = 300;
+    int rangeX = 500;
+    int rangeY = 500;
     RectF rect;
 
     private ArrayList<int[]> colorList;
     private ArrayList<Integer> values = new ArrayList<>();
     private ArrayList<Float> sweepAngles = new ArrayList<>();
     private ArrayList<Float> startAngles = new ArrayList<>();
-    float sumValue;
+    float sumValue = 0;
     float sweepAngle = -90;
 
     private  Handler handler = new Handler(Looper.getMainLooper());
@@ -45,7 +45,7 @@ public class DrawCircleView extends View {
     @Override
     protected void onDraw(final Canvas canvas) {
         centerX = getWidth() / 2;
-        centerY = getHeight() / 2 - 100;
+        centerY = getHeight() / 2;
         rect.set(centerX - rangeX, centerY - rangeY,
                 centerX + rangeX, centerY + rangeY);
 
@@ -73,6 +73,22 @@ public class DrawCircleView extends View {
             canvas.drawArc(rect, startAngles.get(i), sweepAngles.get(i), false,
                     setPaint(colorList.get(i)));
         }
+        drawAllText(canvas);
+    }
+
+    private void drawAllText(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.argb(255, 0, 0, 0));
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStrokeWidth(2);
+        drawText(canvas, paint, "合計", 75, 150);
+        drawText(canvas, paint, String.valueOf(sumValue), 150, 0);
+    }
+
+    private void drawText(Canvas canvas, Paint paint, String text, int textSize, int diffY) {
+        paint.setTextSize(textSize);
+        float textWidth = paint.measureText(text);
+        canvas.drawText(text, centerX - (textWidth / 2), centerY - diffY, paint);
     }
 
     private Paint setPaint(int[] colorList) {
@@ -89,11 +105,11 @@ public class DrawCircleView extends View {
         paint.setStrokeWidth(5);
         paint.setStyle(Paint.Style.STROKE);
         RectF baseRect = new RectF();
+        baseRect.set(centerX - 550, centerY - 550,
+                centerX + 550, centerY + 550);
+        canvas.drawArc(baseRect, -90, 360, false, paint);
         baseRect.set(centerX - 450, centerY - 450,
                 centerX + 450, centerY + 450);
-        canvas.drawArc(baseRect, -90, 360, false, paint);
-        baseRect.set(centerX - 150, centerY - 150,
-                centerX + 150, centerY + 150);
         canvas.drawArc(baseRect, -90, 360, false, paint);
     }
 
