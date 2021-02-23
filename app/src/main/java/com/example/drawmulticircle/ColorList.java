@@ -14,6 +14,14 @@ public class ColorList {
         colorList.add(new int[]{128, 0, 255, 255});
         colorList.add(new int[]{128, 255, 255, 255});
 
+        colorList.add(new int[]{128, 128, 0, 0});
+        colorList.add(new int[]{128, 0, 128, 0});
+        colorList.add(new int[]{128, 128, 128, 0});
+        colorList.add(new int[]{128, 0, 0, 128});
+        colorList.add(new int[]{128, 128, 0, 128});
+        colorList.add(new int[]{128, 0, 128, 128});
+        colorList.add(new int[]{128, 128, 128, 128});
+
         return colorList;
     }
 

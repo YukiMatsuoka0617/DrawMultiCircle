@@ -29,6 +29,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     View layout;
     NumberPicker numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
             numPicker5, numPicker6, numPicker7, numPicker8, numPicker9;
+    NumberPicker[] numberPickers = new NumberPicker[]{numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
+            numPicker5, numPicker6, numPicker7, numPicker8, numPicker9};
+    int[] numberPickersId = new int[]{R.id.numPicker0,R.id.numPicker1,R.id.numPicker2,R.id.numPicker3,R.id.numPicker4,
+            R.id.numPicker5,R.id.numPicker6,R.id.numPicker7,R.id.numPicker8,R.id.numPicker9};
+
     EditText editText;
     ListView listView;
     private InputMethodManager inputMethodManager;
@@ -63,6 +68,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawCircleView.addValue(10000);
         drawCircleView.addValue(10000);
         drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+        drawCircleView.addValue(10000);
+
 
     }
 
@@ -79,46 +96,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editText.setHint("会社名");
         editText.setOnKeyListener(this);
 
-        numPicker0 = layout.findViewById(R.id.numPicker0);
-        numPicker1 = layout.findViewById(R.id.numPicker1);
-        numPicker2 = layout.findViewById(R.id.numPicker2);
-        numPicker3 = layout.findViewById(R.id.numPicker3);
-        numPicker4 = layout.findViewById(R.id.numPicker4);
-        numPicker5 = layout.findViewById(R.id.numPicker5);
-        numPicker6 = layout.findViewById(R.id.numPicker6);
-        numPicker7 = layout.findViewById(R.id.numPicker7);
-        numPicker8 = layout.findViewById(R.id.numPicker8);
-        numPicker9 = layout.findViewById(R.id.numPicker9);
-
-        numPicker0.setMaxValue(9);
-        numPicker0.setMinValue(0);
-
-        numPicker1.setMaxValue(9);
-        numPicker1.setMinValue(0);
-
-        numPicker2.setMaxValue(9);
-        numPicker2.setMinValue(0);
-
-        numPicker3.setMaxValue(9);
-        numPicker3.setMinValue(0);
-
-        numPicker4.setMaxValue(9);
-        numPicker4.setMinValue(0);
-
-        numPicker5.setMaxValue(9);
-        numPicker5.setMinValue(0);
-
-        numPicker6.setMaxValue(9);
-        numPicker6.setMinValue(0);
-
-        numPicker7.setMaxValue(9);
-        numPicker7.setMinValue(0);
-
-        numPicker8.setMaxValue(9);
-        numPicker8.setMinValue(0);
-
-        numPicker9.setMaxValue(9);
-        numPicker9.setMinValue(0);
+        for (int i = 0; i < numberPickers.length; i++) {
+            numberPickers[i] = layout.findViewById(numberPickersId[i]);
+            numberPickers[i].setMinValue(0);
+            numberPickers[i].setMaxValue(9);
+        }
 
         new AlertDialog.Builder(this)
                 .setTitle("会社名と株価の追加")
@@ -127,17 +109,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        int stockPrice = numPicker0.getValue()*10000 +
-                                numPicker1.getValue()*1000 +
-                                numPicker2.getValue()*100 +
-                                numPicker3.getValue()*10 +
-                                numPicker4.getValue();
+                        int stockPrice = numberPickers[0].getValue()*10000 +
+                                numberPickers[1].getValue()*1000 +
+                                numberPickers[2].getValue()*100 +
+                                numberPickers[3].getValue()*10 +
+                                numberPickers[4].getValue();
                         String name = editText.getText().toString();
 
-                        int stockNum = numPicker6.getValue()*1000 +
-                                numPicker7.getValue()*100 +
-                                numPicker8.getValue()*10 +
-                                numPicker9.getValue();
+                        int stockNum = numberPickers[6].getValue()*1000 +
+                                numberPickers[7].getValue()*100 +
+                                numberPickers[8].getValue()*10 +
+                                numberPickers[9].getValue();
 
                         if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
                             Map data = new HashMap();
