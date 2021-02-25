@@ -3,7 +3,10 @@ package com.example.drawmulticircle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -40,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SimpleAdapter adapter;
     ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 
+    SQLiteDatabase db;
+    SQLite sQLite;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,33 +59,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter = new SimpleAdapter(this,
                 list,
                 R.layout.listview_item,
-                new String[]{"name","value","num","sum"},
+                new String[]{"name","price","num","sum"},
                 new int[]{R.id.name, R.id.value,R.id.num, R.id.sum});
         inputMethodManager =  (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
-        Map data = new HashMap();
-        data.put("name", "Corporation");
-        data.put("value", "Price");
-        data.put("num", "Num");
-        data.put("sum", "Sum");
-        list.add(data);
-        listView.setAdapter(adapter);
 
-        //debug
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
-        drawCircleView.addValue(10000);
+        if(sQLite == null){
+            sQLite = new SQLite(getApplicationContext());
+        }
 
+        if(db == null){
+            db = sQLite.getWritableDatabase();
+        }
+
+        readDate();
 
     }
 
@@ -122,14 +114,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 numberPickers[9].getValue();
 
                         if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
-                            Map data = new HashMap();
-                            data.put("name", name);
-                            data.put("value", stockPrice);
-                            data.put("num", stockNum);
-                            data.put("sum", stockPrice * stockNum);
-                            list.add(data);
-                            listView.setAdapter(adapter);
+                            setListView(name,stockPrice,stockNum,stockPrice * stockNum);
                             drawCircleView.addValue(stockPrice * stockNum);
+                            saveDate(db, name, stockPrice, stockNum, stockPrice * stockNum);
                         }
                     }
                 })
@@ -144,5 +131,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
         return false;
+    }
+
+    void saveDate(SQLiteDatabase db, String comName, int price, int num , int sum){
+        ContentValues values = new ContentValues();
+        values.put("comName", comName);
+        values.put("price", price);
+        values.put("num", num);
+        values.put("sum", sum);
+        db.insert("stockDb", null, values);
+    }
+
+    void readDate(){
+        Cursor cursor = db.query(
+                "stockDb",
+                new String[] { "comName", "price", "num", "sum" },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            setListView(cursor.getString(0),
+                    cursor.getInt(1),
+                    cursor.getInt(2),
+                    cursor.getInt(3));
+            drawCircleView.addValue(cursor.getInt(3));
+            cursor.moveToNext();
+        }
+        cursor.close();
+    }
+
+    void setListView(String comName,int price ,int num, int sum){
+        Map data = new HashMap();
+        data.put("name",comName);
+        data.put("price", price);
+        data.put("num", num);
+        data.put("sum", sum);
+        list.add(data);
+        listView.setAdapter(adapter);
     }
 }
