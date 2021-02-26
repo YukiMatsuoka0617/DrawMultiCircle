@@ -28,8 +28,8 @@ public class DrawCircleView extends View {
     float sumValue = 0;
     float sweepAngle = -90;
 
-    private  Handler handler = new Handler(Looper.getMainLooper());
-    private  Runnable runnable;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable runnable;
 
     public DrawCircleView(Context context) {
         super(context);
@@ -52,12 +52,12 @@ public class DrawCircleView extends View {
         for (int i = 0; i < values.size(); i++) {
             sumValue += values.get(i);
         }
-        Log.d("test", "sumValue:"+sumValue);
+        Log.d("test", "sumValue:" + sumValue);
 
         for (int i = 0; i < values.size(); i++) {
             sweepAngles.add((values.get(i) / sumValue) * 360);
         }
-        Log.d("test", "sweepAngles:"+sweepAngles);
+        Log.d("test", "sweepAngles:" + sweepAngles);
 
         for (int i = -1; i < values.size() - 1; i++) {
             if (i != -1) {
@@ -65,7 +65,7 @@ public class DrawCircleView extends View {
             }
             startAngles.add(sweepAngle);
         }
-        Log.d("test", "startAngles:"+startAngles);
+        Log.d("test", "startAngles:" + startAngles);
 
         drawCircleEdge(canvas);
 
@@ -113,7 +113,7 @@ public class DrawCircleView extends View {
         canvas.drawArc(baseRect, -90, 360, false, paint);
     }
 
-    public void addValue(int value){
+    public void addValue(int value) {
         values.add(value);
         runnable = new Runnable() {
             @Override

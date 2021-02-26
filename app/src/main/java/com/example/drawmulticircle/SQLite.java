@@ -1,8 +1,6 @@
 package com.example.drawmulticircle;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -16,6 +14,7 @@ public class SQLite extends SQLiteOpenHelper {
     private static final String COLUMN_NAME_PRICE = "price";
     private static final String COLUMN_NAME_NUM = "num";
     private static final String COLUMN_NAME_SUM = "sum";
+    private static final String COLUMN_NAME_TYPE = "type";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -23,7 +22,8 @@ public class SQLite extends SQLiteOpenHelper {
                     COLUMN_NAME_NAME + " TEXT," +
                     COLUMN_NAME_PRICE + " INTEGER," +
                     COLUMN_NAME_NUM + " INTEGER," +
-                    COLUMN_NAME_SUM + " INTEGER)";
+                    COLUMN_NAME_SUM + " INTEGER," +
+                    COLUMN_NAME_TYPE + " INTEGER)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;

@@ -14,12 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             numPicker5, numPicker6, numPicker7, numPicker8, numPicker9;
     NumberPicker[] numberPickers = new NumberPicker[]{numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
             numPicker5, numPicker6, numPicker7, numPicker8, numPicker9};
-    int[] numberPickersId = new int[]{R.id.numPicker0,R.id.numPicker1,R.id.numPicker2,R.id.numPicker3,R.id.numPicker4,
-            R.id.numPicker5,R.id.numPicker6,R.id.numPicker7,R.id.numPicker8,R.id.numPicker9};
+    int[] numberPickersId = new int[]{R.id.numPicker0, R.id.numPicker1, R.id.numPicker2, R.id.numPicker3, R.id.numPicker4,
+            R.id.numPicker5, R.id.numPicker6, R.id.numPicker7, R.id.numPicker8, R.id.numPicker9};
 
     EditText editText;
     ListView listView;
@@ -45,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SQLiteDatabase db;
     SQLite sQLite;
+
+    String[] spinnerItems = {"日本株", "アメリカ株", "投資信託", "コモデティ"};
+    int spinnerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,40 +64,71 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter = new SimpleAdapter(this,
                 list,
                 R.layout.listview_item,
-                new String[]{"name","price","num","sum"},
-                new int[]{R.id.name, R.id.value,R.id.num, R.id.sum});
-        inputMethodManager =  (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+                new String[]{"name", "price", "num", "sum"},
+                new int[]{R.id.name, R.id.value, R.id.num, R.id.sum});
+        inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
 
-        if(sQLite == null){
+        if (sQLite == null) {
             sQLite = new SQLite(getApplicationContext());
         }
 
-        if(db == null){
+        if (db == null) {
             db = sQLite.getWritableDatabase();
         }
 
         readDate();
-
     }
 
     @Override
     public void onClick(View view) {
-        NumPickerDialog();
+        showDialog();
     }
 
-    void NumPickerDialog(){
-        inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.layout));
+    void makeSpinner(){
+        Spinner spinner = layout.findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, spinnerItems);
 
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("test","i:"+i);
+                Log.d("test","l:"+l);
+                spinnerPosition = i;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+    }
+
+    void makeEditText(){
         editText = layout.findViewById(R.id.editText);
         editText.setHint("会社名");
         editText.setOnKeyListener(this);
+    }
 
+    void makeNumPicker(){
         for (int i = 0; i < numberPickers.length; i++) {
             numberPickers[i] = layout.findViewById(numberPickersId[i]);
             numberPickers[i].setMinValue(0);
             numberPickers[i].setMaxValue(9);
         }
+    }
+
+    void showDialog(){
+        inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.layout));
+
+        makeSpinner();
+
+        makeEditText();
+
+        makeNumPicker();
 
         new AlertDialog.Builder(this)
                 .setTitle("会社名と株価の追加")
@@ -101,22 +137,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        int stockPrice = numberPickers[0].getValue()*10000 +
-                                numberPickers[1].getValue()*1000 +
-                                numberPickers[2].getValue()*100 +
-                                numberPickers[3].getValue()*10 +
-                                numberPickers[4].getValue();
                         String name = editText.getText().toString();
 
-                        int stockNum = numberPickers[6].getValue()*1000 +
-                                numberPickers[7].getValue()*100 +
-                                numberPickers[8].getValue()*10 +
+                        int stockPrice = numberPickers[0].getValue() * 10000 +
+                                numberPickers[1].getValue() * 1000 +
+                                numberPickers[2].getValue() * 100 +
+                                numberPickers[3].getValue() * 10 +
+                                numberPickers[4].getValue();
+
+                        int stockNum = numberPickers[6].getValue() * 1000 +
+                                numberPickers[7].getValue() * 100 +
+                                numberPickers[8].getValue() * 10 +
                                 numberPickers[9].getValue();
 
                         if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
-                            setListView(name,stockPrice,stockNum,stockPrice * stockNum);
+                            setListView(name, stockPrice, stockNum, stockPrice * stockNum,
+                                    spinnerPosition);
                             drawCircleView.addValue(stockPrice * stockNum);
-                            saveDate(db, name, stockPrice, stockNum, stockPrice * stockNum);
+                            saveDate(db, name, stockPrice, stockNum, stockPrice * stockNum,
+                                    spinnerPosition);
                         }
                     }
                 })
@@ -126,26 +165,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        if((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)){
+        if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)) {
             inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
             return true;
         }
         return false;
     }
 
-    void saveDate(SQLiteDatabase db, String comName, int price, int num , int sum){
+    void saveDate(SQLiteDatabase db, String comName, int price, int num, int sum, int type) {
         ContentValues values = new ContentValues();
         values.put("comName", comName);
         values.put("price", price);
         values.put("num", num);
         values.put("sum", sum);
+        values.put("type", type);
         db.insert("stockDb", null, values);
     }
 
-    void readDate(){
+    void readDate() {
         Cursor cursor = db.query(
                 "stockDb",
-                new String[] { "comName", "price", "num", "sum" },
+                new String[]{"comName", "price", "num", "sum", "type"},
                 null,
                 null,
                 null,
@@ -158,19 +198,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setListView(cursor.getString(0),
                     cursor.getInt(1),
                     cursor.getInt(2),
-                    cursor.getInt(3));
+                    cursor.getInt(3),
+                    cursor.getInt(4));
             drawCircleView.addValue(cursor.getInt(3));
             cursor.moveToNext();
         }
         cursor.close();
     }
 
-    void setListView(String comName,int price ,int num, int sum){
+    void setListView(String comName, int price, int num, int sum, int type) {
         Map data = new HashMap();
-        data.put("name",comName);
+        data.put("name", comName);
         data.put("price", price);
         data.put("num", num);
         data.put("sum", sum);
+        data.put("type", type);
         list.add(data);
         listView.setAdapter(adapter);
     }
