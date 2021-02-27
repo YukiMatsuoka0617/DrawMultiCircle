@@ -19,27 +19,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
+public class MainActivity extends AppCompatActivity
+        implements View.OnClickListener, View.OnKeyListener {
     DrawCircleView drawCircleView;
     Button button;
     LayoutInflater inflater;
     View layout;
-    NumberPicker numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
-            numPicker5, numPicker6, numPicker7, numPicker8, numPicker9;
-    NumberPicker[] numberPickers = new NumberPicker[]{numPicker0, numPicker1, numPicker2, numPicker3, numPicker4,
-            numPicker5, numPicker6, numPicker7, numPicker8, numPicker9};
-    int[] numberPickersId = new int[]{R.id.numPicker0, R.id.numPicker1, R.id.numPicker2, R.id.numPicker3, R.id.numPicker4,
-            R.id.numPicker5, R.id.numPicker6, R.id.numPicker7, R.id.numPicker8, R.id.numPicker9};
 
-    EditText editText;
+    EditText editTextName, editTextPrice, editTextNum;
     ListView listView;
     private InputMethodManager inputMethodManager;
     SimpleAdapter adapter;
@@ -50,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     String[] spinnerItems = {"日本株", "アメリカ株", "投資信託", "コモデティ"};
     int spinnerPosition;
+
+    TextView textViewUnit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void makeSpinner(){
+        textViewUnit = layout.findViewById(R.id.text_unit);
         Spinner spinner = layout.findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerItems);
@@ -94,9 +92,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("test","i:"+i);
-                Log.d("test","l:"+l);
                 spinnerPosition = i;
+                if (i == 1) {
+                    textViewUnit.setText("ドル");
+                } else {
+                    textViewUnit.setText("円");
+                }
             }
 
             @Override
@@ -107,17 +108,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void makeEditText(){
-        editText = layout.findViewById(R.id.editText);
-        editText.setHint("会社名");
-        editText.setOnKeyListener(this);
-    }
+        editTextName = layout.findViewById(R.id.editText);
+        editTextName.setHint("会社名");
+        editTextName.setOnKeyListener(this);
 
-    void makeNumPicker(){
-        for (int i = 0; i < numberPickers.length; i++) {
-            numberPickers[i] = layout.findViewById(numberPickersId[i]);
-            numberPickers[i].setMinValue(0);
-            numberPickers[i].setMaxValue(9);
-        }
+        editTextPrice = layout.findViewById(R.id.edit_price);
+        editTextPrice.setHint("株価");
+        editTextPrice.setOnKeyListener(this);
+
+        editTextNum = layout.findViewById(R.id.edit_num);
+        editTextNum.setHint("株数");
+        editTextNum.setOnKeyListener(this);
     }
 
     void showDialog(){
@@ -128,8 +129,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         makeEditText();
 
-        makeNumPicker();
-
         new AlertDialog.Builder(this)
                 .setTitle("会社名と株価の追加")
                 .setView(layout)
@@ -137,18 +136,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        String name = editText.getText().toString();
+                        String name = editTextName.getText().toString();
 
-                        int stockPrice = numberPickers[0].getValue() * 10000 +
-                                numberPickers[1].getValue() * 1000 +
-                                numberPickers[2].getValue() * 100 +
-                                numberPickers[3].getValue() * 10 +
-                                numberPickers[4].getValue();
+                        int stockPrice = Integer.parseInt(editTextName.getText().toString());
 
-                        int stockNum = numberPickers[6].getValue() * 1000 +
-                                numberPickers[7].getValue() * 100 +
-                                numberPickers[8].getValue() * 10 +
-                                numberPickers[9].getValue();
+                        int stockNum = Integer.parseInt(editTextNum.getText().toString());
 
                         if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
                             setListView(name, stockPrice, stockNum, stockPrice * stockNum,
@@ -166,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)) {
-            inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            inputMethodManager.hideSoftInputFromWindow(editTextName.getWindowToken(),
+                    InputMethodManager.RESULT_UNCHANGED_SHOWN);
             return true;
         }
         return false;

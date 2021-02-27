@@ -6,7 +6,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="center"
         android:text="種類"
@@ -16,7 +16,8 @@
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_margin="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,48 +49,22 @@
         android:gravity="center"
         android:orientation="horizontal" >
 
-        <NumberPicker
-            android:id="@+id/numPicker0"
+        <EditText
+            android:id="@+id/edit_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:inputType="numberSigned"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"/>
 
         <TextView
+            android:id="@+id/text_unit"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="."
-            android:textSize="40sp" />
-
-        <NumberPicker
-            android:id="@+id/numPicker5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_gravity="center"
+            android:text="円"
+            android:textSize="20sp" />
 
     </LinearLayout>
 
@@ -106,31 +81,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_gravity="center"
         android:orientation="horizontal" >
 
-        <NumberPicker
-            android:id="@+id/numPicker6"
+        <EditText
+            android:id="@+id/edit_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-
-        <NumberPicker
-            android:id="@+id/numPicker9"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:inputType="numberSigned"
+            android:layout_margin="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
