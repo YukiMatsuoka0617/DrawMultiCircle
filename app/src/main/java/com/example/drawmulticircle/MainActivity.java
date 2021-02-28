@@ -2,6 +2,7 @@ package com.example.drawmulticircle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -29,24 +30,27 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, View.OnKeyListener {
-    DrawCircleView drawCircleView;
     Button button;
     LayoutInflater inflater;
     View layout;
 
     EditText editTextName, editTextPrice, editTextNum;
-    ListView listView;
+    static ListView listView;
     private InputMethodManager inputMethodManager;
-    SimpleAdapter adapter;
-    ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 
-    SQLiteDatabase db;
+    static SimpleAdapter adapter;
+    static ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+
+    static SQLiteDatabase db;
     SQLite sQLite;
 
     String[] spinnerItems = {"日本株", "アメリカ株", "投資信託", "コモデティ"};
     int spinnerPosition;
 
     TextView textViewUnit;
+
+    MyFragmentPagerAdapter myFragmentPagerAdapter;
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +60,17 @@ public class MainActivity extends AppCompatActivity
         button = findViewById(R.id.button);
         button.setOnClickListener(this);
 
-        drawCircleView = findViewById(R.id.drawCircleView);
         listView = findViewById(R.id.listView);
         adapter = new SimpleAdapter(this,
                 list,
                 R.layout.listview_item,
-                new String[]{"name", "price", "num", "sum"},
-                new int[]{R.id.name, R.id.value, R.id.num, R.id.sum});
+                new String[]{"name", "type", "price", "num", "sum"},
+                new int[]{R.id.name, R.id.type, R.id.value, R.id.num, R.id.sum});
         inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+
+        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        viewPager = findViewById(R.id.viewpager);
+        viewPager.setAdapter(myFragmentPagerAdapter);
 
         if (sQLite == null) {
             sQLite = new SQLite(getApplicationContext());
@@ -73,7 +80,6 @@ public class MainActivity extends AppCompatActivity
             db = sQLite.getWritableDatabase();
         }
 
-        readDate();
     }
 
     @Override
@@ -138,14 +144,14 @@ public class MainActivity extends AppCompatActivity
 
                         String name = editTextName.getText().toString();
 
-                        int stockPrice = Integer.parseInt(editTextName.getText().toString());
+                        int stockPrice = Integer.parseInt(editTextPrice.getText().toString());
 
                         int stockNum = Integer.parseInt(editTextNum.getText().toString());
 
                         if (name.length() != 0 && stockPrice != 0 && stockNum != 0) {
                             setListView(name, stockPrice, stockNum, stockPrice * stockNum,
                                     spinnerPosition);
-                            drawCircleView.addValue(stockPrice * stockNum);
+                            Fragment0.drawCircleView.addValue(stockPrice * stockNum);
                             saveDate(db, name, stockPrice, stockNum, stockPrice * stockNum,
                                     spinnerPosition);
                         }
@@ -175,7 +181,8 @@ public class MainActivity extends AppCompatActivity
         db.insert("stockDb", null, values);
     }
 
-    void readDate() {
+    public static void readDate() {
+        Log.d("test", "readDate");
         Cursor cursor = db.query(
                 "stockDb",
                 new String[]{"comName", "price", "num", "sum", "type"},
@@ -193,19 +200,33 @@ public class MainActivity extends AppCompatActivity
                     cursor.getInt(2),
                     cursor.getInt(3),
                     cursor.getInt(4));
-            drawCircleView.addValue(cursor.getInt(3));
+            Fragment0.drawCircleView.addValue(cursor.getInt(3));
             cursor.moveToNext();
         }
         cursor.close();
     }
 
-    void setListView(String comName, int price, int num, int sum, int type) {
+    public static void setListView(String comName, int price, int num, int sum, int type) {
         Map data = new HashMap();
         data.put("name", comName);
         data.put("price", price);
         data.put("num", num);
         data.put("sum", sum);
-        data.put("type", type);
+        switch (type){
+            case 0:
+                data.put("type", "日本株");
+                break;
+            case 1:
+                data.put("type", "アメリカ株");
+                break;
+            case 2:
+                data.put("type", "投資信託");
+                break;
+            case 3:
+                data.put("type", "コモディティ");
+                break;
+        }
+
         list.add(data);
         listView.setAdapter(adapter);
     }
