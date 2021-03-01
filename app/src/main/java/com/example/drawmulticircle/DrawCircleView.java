@@ -19,6 +19,8 @@ public class DrawCircleView extends View {
     int centerY;
     int rangeX = 500;
     int rangeY = 500;
+    int baseCircleEdge = 550;
+    int baseCircleWidth = 100;
     RectF rect;
 
     private ArrayList<int[]> colorList;
@@ -105,11 +107,15 @@ public class DrawCircleView extends View {
         paint.setStrokeWidth(5);
         paint.setStyle(Paint.Style.STROKE);
         RectF baseRect = new RectF();
-        baseRect.set(centerX - 550, centerY - 550,
-                centerX + 550, centerY + 550);
+        baseRect.set(centerX - baseCircleEdge,
+                centerY - baseCircleEdge,
+                centerX + baseCircleEdge,
+                centerY + baseCircleEdge);
         canvas.drawArc(baseRect, -90, 360, false, paint);
-        baseRect.set(centerX - 450, centerY - 450,
-                centerX + 450, centerY + 450);
+        baseRect.set(centerX - (baseCircleEdge - baseCircleWidth),
+                centerY - (baseCircleEdge - baseCircleWidth),
+                centerX + (baseCircleEdge - baseCircleWidth),
+                centerY + (baseCircleEdge - baseCircleWidth));
         canvas.drawArc(baseRect, -90, 360, false, paint);
     }
 

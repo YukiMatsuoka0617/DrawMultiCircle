@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, View.OnKeyListener {
+        implements View.OnKeyListener {
     Button button;
     LayoutInflater inflater;
     View layout;
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity
     static SQLiteDatabase db;
     SQLite sQLite;
 
-    String[] spinnerItems = {"日本株", "アメリカ株", "投資信託", "コモデティ"};
     int spinnerPosition;
 
     TextView textViewUnit;
@@ -57,8 +56,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = findViewById(R.id.button);
-        button.setOnClickListener(this);
+        setButton();
 
         listView = findViewById(R.id.listView);
         adapter = new SimpleAdapter(this,
@@ -82,12 +80,23 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onClick(View view) {
-        showDialog();
+    void setButton(){
+        button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
     }
 
     void makeSpinner(){
+        String[] spinnerItems = {
+                getString(R.string.japan_stock),
+                getString(R.string.america_stock),
+                getString(R.string.investment_trust),
+                getString(R.string.commodities)
+        };
         textViewUnit = layout.findViewById(R.id.text_unit);
         Spinner spinner = layout.findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
@@ -100,9 +109,9 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 spinnerPosition = i;
                 if (i == 1) {
-                    textViewUnit.setText("ドル");
+                    textViewUnit.setText(getString(R.string.dollar));
                 } else {
-                    textViewUnit.setText("円");
+                    textViewUnit.setText(getString(R.string.yen));
                 }
             }
 
@@ -115,15 +124,15 @@ public class MainActivity extends AppCompatActivity
 
     void makeEditText(){
         editTextName = layout.findViewById(R.id.editText);
-        editTextName.setHint("会社名");
+        editTextName.setHint(getString(R.string.corporation_name));
         editTextName.setOnKeyListener(this);
 
         editTextPrice = layout.findViewById(R.id.edit_price);
-        editTextPrice.setHint("株価");
+        editTextPrice.setHint(getString(R.string.stock_price));
         editTextPrice.setOnKeyListener(this);
 
         editTextNum = layout.findViewById(R.id.edit_num);
-        editTextNum.setHint("株数");
+        editTextNum.setHint(getString(R.string.stock_num));
         editTextNum.setOnKeyListener(this);
     }
 

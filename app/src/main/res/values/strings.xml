@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">DrawMultiCircle</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="japan_stock">日本株式</string>
+    <string name="america_stock">アメリカ株式</string>
+    <string name="investment_trust">投資信託</string>
+    <string name="commodities">コモデティ</string>
+
+    <string name="dollar">ドル</string>
+    <string name="yen">円</string>
+
+    <string name="corporation_name">会社名</string>
+    <string name="stock_price">株価</string>
+    <string name="stock_num">株数</string>
+
+
 </resources>
