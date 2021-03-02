@@ -30,7 +30,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnKeyListener {
-    Button button;
     LayoutInflater inflater;
     View layout;
 
@@ -46,17 +45,14 @@ public class MainActivity extends AppCompatActivity
 
     int spinnerPosition;
 
-    TextView textViewUnit;
-
-    MyFragmentPagerAdapter myFragmentPagerAdapter;
-    ViewPager viewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         setButton();
+
+        setViewPager();
 
         listView = findViewById(R.id.listView);
         adapter = new SimpleAdapter(this,
@@ -65,10 +61,6 @@ public class MainActivity extends AppCompatActivity
                 new String[]{"name", "type", "price", "num", "sum"},
                 new int[]{R.id.name, R.id.type, R.id.value, R.id.num, R.id.sum});
         inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
-
-        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager = findViewById(R.id.viewpager);
-        viewPager.setAdapter(myFragmentPagerAdapter);
 
         if (sQLite == null) {
             sQLite = new SQLite(getApplicationContext());
@@ -80,8 +72,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    void setViewPager(){
+        MyFragmentPagerAdapter myFragmentPagerAdapter =
+                new MyFragmentPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.viewpager);
+        viewPager.setAdapter(myFragmentPagerAdapter);
+    }
+
     void setButton(){
-        button = findViewById(R.id.button);
+        Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                 getString(R.string.investment_trust),
                 getString(R.string.commodities)
         };
-        textViewUnit = layout.findViewById(R.id.text_unit);
+        final TextView textViewUnit = layout.findViewById(R.id.text_unit);
         Spinner spinner = layout.findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerItems);
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         makeEditText();
 
         new AlertDialog.Builder(this)
-                .setTitle("会社名と株価の追加")
+                .setTitle(getString(R.string.dialog_title))
                 .setView(layout)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
