@@ -14,6 +14,7 @@
     <string name="stock_num">株数</string>
 
     <string name="dialog_title">会社名と株価の入力</string>
+    <string name="details_dialog_title">会社名と株価の入力</string>
 
 
 </resources>

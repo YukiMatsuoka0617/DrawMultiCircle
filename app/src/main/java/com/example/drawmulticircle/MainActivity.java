@@ -30,8 +30,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnKeyListener {
-    LayoutInflater inflater;
-    View layout;
 
     EditText editTextName, editTextPrice, editTextNum;
     static ListView listView;
@@ -54,14 +52,14 @@ public class MainActivity extends AppCompatActivity
 
         setViewPager();
 
-        listView = findViewById(R.id.listView);
-        adapter = new SimpleAdapter(this,
-                list,
-                R.layout.listview_item,
-                new String[]{"name", "type", "price", "num", "sum"},
-                new int[]{R.id.name, R.id.type, R.id.value, R.id.num, R.id.sum});
-        inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+        setListView();
 
+        checkDataBase();
+
+        inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
+    }
+
+    void checkDataBase(){
         if (sQLite == null) {
             sQLite = new SQLite(getApplicationContext());
         }
@@ -69,7 +67,22 @@ public class MainActivity extends AppCompatActivity
         if (db == null) {
             db = sQLite.getWritableDatabase();
         }
+    }
 
+    void setListView(){
+        listView = findViewById(R.id.listView);
+        adapter = new SimpleAdapter(this,
+                list,
+                R.layout.listview_item,
+                new String[]{"name", "type", "price", "num", "sum"},
+                new int[]{R.id.name, R.id.type, R.id.value, R.id.num, R.id.sum});
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                showDetailsDialog(i);
+            }
+        });
     }
 
     void setViewPager(){
@@ -84,20 +97,20 @@ public class MainActivity extends AppCompatActivity
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                showAddDialog();
             }
         });
     }
 
-    void makeSpinner(){
+    void makeSpinner(View view){
         String[] spinnerItems = {
                 getString(R.string.japan_stock),
                 getString(R.string.america_stock),
                 getString(R.string.investment_trust),
                 getString(R.string.commodities)
         };
-        final TextView textViewUnit = layout.findViewById(R.id.text_unit);
-        Spinner spinner = layout.findViewById(R.id.spinner);
+        final TextView textViewUnit = view.findViewById(R.id.text_unit);
+        Spinner spinner = view.findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, spinnerItems);
 
@@ -121,31 +134,31 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    void makeEditText(){
-        editTextName = layout.findViewById(R.id.editText);
+    void makeEditText(View view){
+        editTextName = view.findViewById(R.id.editText);
         editTextName.setHint(getString(R.string.corporation_name));
         editTextName.setOnKeyListener(this);
 
-        editTextPrice = layout.findViewById(R.id.edit_price);
+        editTextPrice = view.findViewById(R.id.edit_price);
         editTextPrice.setHint(getString(R.string.stock_price));
         editTextPrice.setOnKeyListener(this);
 
-        editTextNum = layout.findViewById(R.id.edit_num);
+        editTextNum = view.findViewById(R.id.edit_num);
         editTextNum.setHint(getString(R.string.stock_num));
         editTextNum.setOnKeyListener(this);
     }
 
-    void showDialog(){
-        inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.layout));
+    void showAddDialog(){
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.layout));
 
-        makeSpinner();
+        makeSpinner(view);
 
-        makeEditText();
+        makeEditText(view);
 
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.dialog_title))
-                .setView(layout)
+                .setView(view)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -166,6 +179,60 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    void showDetailsDialog(int position){
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.details_dialog, (ViewGroup) findViewById(R.id.layout));
+
+        final TextView textViewType = view.findViewById(R.id.type);
+        final TextView textViewName = view.findViewById(R.id.name);
+        final TextView textViewPrice = view.findViewById(R.id.price);
+        final TextView textViewNum = view.findViewById(R.id.num);
+        final TextView textViewSum = view.findViewById(R.id.sum);
+
+        Cursor cursor = db.query(
+                "stockDb",
+                new String[]{"comName", "price", "num", "sum", "type"},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            if (i == position) {
+                textViewName.setText(cursor.getString(0));
+                textViewPrice.setText(cursor.getString(1));
+                textViewNum.setText(cursor.getString(2));
+                textViewSum.setText(cursor.getString(3));
+                textViewType.setText(cursor.getString(4));
+                switch (cursor.getInt(4)){
+                    case 0:
+                        textViewType.setText("日本株");
+                        break;
+                    case 1:
+                        textViewType.setText("アメリカ株");
+                        break;
+                    case 2:
+                        textViewType.setText("投資信託");
+                        break;
+                    case 3:
+                        textViewType.setText("コモディティ");
+                        break;
+                }
+            }
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.details_dialog_title))
+                .setView(view)
+                .setPositiveButton("OK", null)
                 .show();
     }
 
@@ -190,7 +257,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static void readDate() {
-        Log.d("test", "readDate");
         Cursor cursor = db.query(
                 "stockDb",
                 new String[]{"comName", "price", "num", "sum", "type"},
@@ -236,6 +302,5 @@ public class MainActivity extends AppCompatActivity
         }
 
         list.add(data);
-        listView.setAdapter(adapter);
     }
 }
