@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity
 
     int spinnerPosition;
 
+    String name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +57,8 @@ public class MainActivity extends AppCompatActivity
         setListView();
 
         checkDataBase();
+
+//        readDate();
 
         inputMethodManager = (InputMethodManager) getSystemService(this.INPUT_METHOD_SERVICE);
     }
@@ -93,8 +97,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     void setButton(){
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button addButton = findViewById(R.id.button_add);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showAddDialog();
@@ -182,7 +186,7 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    void showDetailsDialog(int position){
+    void showDetailsDialog(final int position){
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.details_dialog, (ViewGroup) findViewById(R.id.layout));
 
@@ -192,19 +196,11 @@ public class MainActivity extends AppCompatActivity
         final TextView textViewNum = view.findViewById(R.id.num);
         final TextView textViewSum = view.findViewById(R.id.sum);
 
-        Cursor cursor = db.query(
-                "stockDb",
-                new String[]{"comName", "price", "num", "sum", "type"},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        cursor.moveToFirst();
+        Cursor cursor = getDatabase();
 
         for (int i = 0; i < cursor.getCount(); i++) {
             if (i == position) {
+                name = cursor.getString(0);
                 textViewName.setText(cursor.getString(0));
                 textViewPrice.setText(cursor.getString(1));
                 textViewNum.setText(cursor.getString(2));
@@ -232,7 +228,15 @@ public class MainActivity extends AppCompatActivity
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.details_dialog_title))
                 .setView(view)
-                .setPositiveButton("OK", null)
+                .setPositiveButton("削除", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        db.delete("stockDb",  "comName = ?",  new String[]{name});
+                        Fragment0.drawCircleView.addValue(0);
+                        list.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
                 .show();
     }
 
@@ -257,16 +261,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static void readDate() {
-        Cursor cursor = db.query(
-                "stockDb",
-                new String[]{"comName", "price", "num", "sum", "type"},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        cursor.moveToFirst();
+        Cursor cursor = getDatabase();
 
         for (int i = 0; i < cursor.getCount(); i++) {
             setListView(cursor.getString(0),
@@ -278,6 +273,21 @@ public class MainActivity extends AppCompatActivity
             cursor.moveToNext();
         }
         cursor.close();
+    }
+
+    public static Cursor getDatabase(){
+        Cursor cursor = db.query(
+                "stockDb",
+                new String[]{"comName", "price", "num", "sum", "type"},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        return cursor;
     }
 
     public static void setListView(String comName, int price, int num, int sum, int type) {

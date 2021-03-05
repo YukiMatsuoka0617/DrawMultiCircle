@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class Fragment1 extends Fragment {
+//    public static DrawCircleView drawCircleView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -25,6 +26,7 @@ public class Fragment1 extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.d("test", "Fragment1");
+//        drawCircleView = view.findViewById(R.id.drawCircleView);
     }
 
     @Override

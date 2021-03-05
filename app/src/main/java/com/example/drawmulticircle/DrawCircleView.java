@@ -134,4 +134,18 @@ public class DrawCircleView extends View {
         handler.post(runnable);
     }
 
+    public void myInvalidate() {
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                sumValue = 0;
+                sweepAngles.clear();
+                sweepAngle = -90;
+                startAngles.clear();
+            }
+        };
+        handler.post(runnable);
+    }
+
 }
