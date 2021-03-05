@@ -212,16 +212,16 @@ public class MainActivity extends AppCompatActivity
                 textViewType.setText(cursor.getString(4));
                 switch (cursor.getInt(4)){
                     case 0:
-                        textViewType.setText("日本株");
+                        textViewType.setText(getString(R.string.japan_stock));
                         break;
                     case 1:
-                        textViewType.setText("アメリカ株");
+                        textViewType.setText(getString(R.string.america_stock));
                         break;
                     case 2:
-                        textViewType.setText("投資信託");
+                        textViewType.setText(getString(R.string.investment_trust));
                         break;
                     case 3:
-                        textViewType.setText("コモディティ");
+                        textViewType.setText(getString(R.string.commodities));
                         break;
                 }
             }
